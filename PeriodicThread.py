@@ -1,19 +1,24 @@
-from threading import Thread
+from .EThread import EThread
 import time
 
-class PeriodicTread(Thread):
-    def __init__(self,sleeptime,func=None):
-        Thread.__init__(self)
+class PeriodicThread(EThread):
+    def __init__(self,sleeptime,func=None,outstream=None):
+        EThread.__init__(self,outstream)
         self._sleep=sleeptime
         self._periodicFunction = func
 
-    def _proc(self):
+    def _execute(self):
         if self._periodicFunction != None:
             self._periodicFunction()
-
-    def run(self):
-        self.runOK=True
-        while self.runOK:
-            self._proc()
             time.sleep(self._sleep)
 
+class PeriodicThread2(EThread):
+    def __init__(self,sleeptime,func=None,outstream=None):
+        EThread.__init__(self,outstream)
+        self._sleep=sleeptime
+        self._periodicFunction = func
+
+    def _execute(self):
+        if self._periodicFunction != None:
+            self._periodicFunction(self)
+            time.sleep(self._sleep)
