@@ -1,6 +1,8 @@
 from threading import Thread
 from sys import stdout
 
+import RedirectedLogging
+
 class EThread(Thread):
     """
      An extended thread class that is stopable (between runs of _execute()), has somewhat better readable output and startup(cleanSetup) and cleanup hooks.
@@ -9,16 +11,10 @@ class EThread(Thread):
     def __init__(self, outstream=None):
         Thread.__init__(self)
         self._runOK = True
-        if outstream is None:
-            self._outstream = stdout
-        else:
-            self._outstream = outstream
+        self._outstream = outstream
 
     def __str__(self):
         return "%s@%s" % (self.__class__.__name__,self.getName())
-
-    def _log(self, msg):
-        self._outstream.write("[%s] %s\n" % (str(self),msg))
 
     def _cleanup(self):
         if not self.isAlive():
@@ -28,6 +24,8 @@ class EThread(Thread):
         self._runOK = False
 
     def run(self):
+        if self._outstream:
+            RedirectedLogging.redirect(filename= self._outstream, format='%(asctime)s:'+str(self)+':%(name)s:%(levelname)s:%(message)s')
         while self._runOK:
             self._execute()
         self._cleanup()
