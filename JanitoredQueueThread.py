@@ -15,7 +15,7 @@ class JanitoredQueueThread(QueueThread):
         while True:
             timeout = (cycle_end - datetime.now()).total_seconds()
             try:
-                self.process(self.get(True,timeout))
+                self._process(self.get(True,timeout))
                 self.task_done()
             except Empty as e:
                 pass
